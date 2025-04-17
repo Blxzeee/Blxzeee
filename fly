@@ -1,0 +1,347 @@
+-- Services
+local player = game:GetService("Players").LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local camera = game:GetService("Workspace").CurrentCamera
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+
+-- Fly variables
+local flying = false
+local flySpeed = 50
+local bodyVelocity
+
+-- Create main GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.CoreGui
+
+-- Animation function
+local function tweenElement(element, properties, duration, easingStyle, delay)
+    if delay then task.wait(delay) end
+    local tweenInfo = TweenInfo.new(
+        duration,
+        easingStyle or Enum.EasingStyle.Quint,
+        Enum.EasingDirection.Out
+    )
+    local tween = TweenService:Create(element, tweenInfo, properties)
+    tween:Play()
+    return tween
+end
+
+-- Original GUI frame with animation
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 240, 0, 300) -- Original size
+frame.Position = UDim2.new(0.5, 20, 0, -400) -- Start above screen
+frame.AnchorPoint = Vector2.new(0.5, 0)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BackgroundTransparency = 0.7
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Parent = screenGui
+
+-- Add UICorner
+local frameCorner = Instance.new("UICorner")
+frameCorner.CornerRadius = UDim.new(0, 35)
+frameCorner.Parent = frame
+
+-- Title text (original style with animation)
+local titleText = Instance.new("TextLabel")
+titleText.Size = UDim2.new(1, 0, 0.1, 0)
+titleText.Position = UDim2.new(0, 0, 0.05, 0)
+titleText.BackgroundTransparency = 1
+titleText.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleText.Text = "Onux Hub FE v0.0.1"
+titleText.Font = Enum.Font.SourceSansBold  -- Or another bold font like GothamBlack
+titleText.TextSize = 32.5
+titleText.TextTransparency = 1 -- Start invisible
+titleText.Parent = frame
+
+-- Original buttons with animations
+local function createOriginalButton(name, position, size, color, delay)
+    local button = Instance.new("TextButton")
+    button.Size = size
+    button.Position = position
+    button.BackgroundColor3 = color
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Text = name
+    button.Font = Enum.Font.Arial
+    button.TextSize = name == "Close GUI" and 16 or 20
+    button.TextTransparency = 1 -- Start invisible
+    button.BackgroundTransparency = 1 -- Start transparent
+    button.Parent = frame
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 35)
+    corner.Parent = button
+    
+    -- Animate in
+    tweenElement(button, {
+        BackgroundTransparency = 0,
+        TextTransparency = 0
+    }, 0.5, Enum.EasingStyle.Back, delay)
+    
+    return button
+end
+
+-- Create original buttons
+local flyButton = createOriginalButton(
+    "Fly", 
+    UDim2.new(0.1, 0, 0.2, 0), 
+    UDim2.new(0.8, 0, 0.2, 0), 
+    Color3.fromRGB(100, 100, 100),
+    0.2
+)
+
+local unflyButton = createOriginalButton(
+    "Unfly", 
+    UDim2.new(0.1, 0, 0.45, 0), 
+    UDim2.new(0.8, 0, 0.2, 0), 
+    Color3.fromRGB(100, 100, 100),
+    0.3
+)
+
+local closeButton = createOriginalButton(
+    "Close GUI", 
+    UDim2.new(0.2, 0, 0.7, 0), 
+    UDim2.new(0.6, 0, 0.15, 0), 
+    Color3.fromRGB(150, 50, 50),
+    0.4
+)
+
+-- Original YT text with animation
+local ytText = Instance.new("TextLabel")
+ytText.Size = UDim2.new(0.8, 0, 0.1, 0)
+ytText.Position = UDim2.new(0.1, 0, 0.85, 0) -- Original position
+ytText.TextXAlignment = Enum.TextXAlignment.Left
+ytText.BackgroundTransparency = 1
+ytText.TextColor3 = Color3.fromRGB(255, 255, 255)
+ytText.Text = "YT: iBlxzeeeQu"
+ytText.Font = Enum.Font.Arial
+ytText.TextSize = 16
+ytText.TextTransparency = 1
+ytText.Parent = frame
+
+-- Animate main GUI entrance
+tweenElement(frame, {
+    Position = UDim2.new(0.5, 20, 0.1, 0)
+}, 0.8, Enum.EasingStyle.Quint)
+
+-- Animate text elements
+tweenElement(titleText, {TextTransparency = 0}, 0.5, nil, 0.4)
+tweenElement(ytText, {TextTransparency = 0}, 0.5, nil, 0.8)
+
+-- Original popup with animations
+local popupFrame = Instance.new("Frame")
+popupFrame.Size = UDim2.new(0, 220, 0, 80) -- Original size
+popupFrame.Position = UDim2.new(0.5, -110, 0.5, -40)
+popupFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+popupFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+popupFrame.BackgroundTransparency = 1 -- Start transparent
+popupFrame.BorderSizePixel = 0
+popupFrame.Visible = false
+popupFrame.Parent = screenGui
+
+-- Add corner
+local popupCorner = Instance.new("UICorner")
+popupCorner.CornerRadius = UDim.new(0, 35)
+popupCorner.Parent = popupFrame
+
+-- Popup text
+local confirmText = Instance.new("TextLabel")
+confirmText.Size = UDim2.new(1, 0, 0.3, 0)
+confirmText.Position = UDim2.new(0, 0, 0.1, 0)
+confirmText.BackgroundTransparency = 1
+confirmText.TextColor3 = Color3.fromRGB(255, 255, 255)
+confirmText.Text = "Are you sure?"
+confirmText.Font = Enum.Font.Arial
+confirmText.TextSize = 20
+confirmText.TextTransparency = 1
+confirmText.Parent = popupFrame
+
+-- Original popup buttons with animations
+local function createPopupButton(name, position, color, textColor)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(0.45, 0, 0.8, 0)
+    button.Position = position
+    button.BackgroundColor3 = color
+    button.TextColor3 = textColor
+    button.Text = name
+    button.Font = Enum.Font.Arial
+    button.TextSize = 16
+    button.TextTransparency = 1
+    button.BackgroundTransparency = 1
+    button.Parent = popupFrame
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 35)
+    corner.Parent = button
+    
+    return button
+end
+
+local popupCloseButton = createPopupButton(
+    "Close", 
+    UDim2.new(0.025, 0, 0.1, 0), 
+    Color3.fromRGB(150, 50, 50),
+    Color3.fromRGB(255, 255, 255)
+)
+
+local nevermindButton = createPopupButton(
+    "Nevermind", 
+    UDim2.new(0.525, 0, 0.1, 0), 
+    Color3.fromRGB(50, 255, 50),
+    Color3.fromRGB(0, 0, 0)
+)
+
+-- Button click effect
+local function buttonClickEffect(button)
+    local originalSize = button.Size
+    tweenElement(button, {
+        Size = originalSize - UDim2.new(0.05, 0, 0.05, 0)
+    }, 0.1)
+    task.wait(0.1)
+    tweenElement(button, {
+        Size = originalSize
+    }, 0.2, Enum.EasingStyle.Bounce)
+end
+
+-- Show popup with animation
+local function showPopup()
+    frame.Visible = false
+    popupFrame.Visible = true
+    
+    -- Reset popup state
+    popupFrame.BackgroundTransparency = 1
+    confirmText.TextTransparency = 1
+    popupCloseButton.BackgroundTransparency = 1
+    popupCloseButton.TextTransparency = 1
+    nevermindButton.BackgroundTransparency = 1
+    nevermindButton.TextTransparency = 1
+    
+    -- Animate popup in
+    tweenElement(popupFrame, {
+        BackgroundTransparency = 0.5
+    }, 0.5)
+    
+    -- Animate elements
+    tweenElement(confirmText, {TextTransparency = 0}, 0.3, nil, 0.2)
+    tweenElement(popupCloseButton, {
+        BackgroundTransparency = 0,
+        TextTransparency = 0
+    }, 0.3, nil, 0.3)
+    tweenElement(nevermindButton, {
+        BackgroundTransparency = 0,
+        TextTransparency = 0
+    }, 0.3, nil, 0.4)
+end
+
+-- Fly functions (original)
+local function startFlying()
+    if flying then return end
+    flying = true
+    bodyVelocity = Instance.new("BodyVelocity")
+    bodyVelocity.MaxForce = Vector3.new(4000, 4000, 4000)
+    bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+    bodyVelocity.Name = "FlyVelocity"
+    bodyVelocity.Parent = player.Character.HumanoidRootPart
+end
+
+local function stopFlying()
+    if not flying then return end
+    flying = false
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        if player.Character.HumanoidRootPart:FindFirstChild("FlyVelocity") then
+            player.Character.HumanoidRootPart.FlyVelocity:Destroy()
+        end
+    end
+end
+
+-- Connect buttons with effects
+flyButton.MouseButton1Click:Connect(function()
+    buttonClickEffect(flyButton)
+    startFlying()
+end)
+
+unflyButton.MouseButton1Click:Connect(function()
+    buttonClickEffect(unflyButton)
+    stopFlying()
+end)
+
+closeButton.MouseButton1Click:Connect(function()
+    buttonClickEffect(closeButton)
+    showPopup()
+end)
+
+popupCloseButton.MouseButton1Click:Connect(function()
+    buttonClickEffect(popupCloseButton)
+    screenGui:Destroy()
+end)
+
+nevermindButton.MouseButton1Click:Connect(function()
+    buttonClickEffect(nevermindButton)
+    
+    -- Animate popup out
+    tweenElement(popupFrame, {
+        BackgroundTransparency = 1
+    }, 0.3)
+    
+    tweenElement(confirmText, {TextTransparency = 1}, 0.2)
+    tweenElement(popupCloseButton, {
+        BackgroundTransparency = 1,
+        TextTransparency = 1
+    }, 0.2)
+    tweenElement(nevermindButton, {
+        BackgroundTransparency = 1,
+        TextTransparency = 1
+    }, 0.2)
+    
+    task.wait(0.3)
+    popupFrame.Visible = false
+    frame.Visible = true
+end)
+
+-- F key toggle with effect
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.F then
+        if flying then 
+            stopFlying()
+            buttonClickEffect(unflyButton)
+        else 
+            startFlying()
+            buttonClickEffect(flyButton)
+        end
+    end
+end)
+
+-- Movement handling (original)
+local function handleManualMovement()
+    if flying and bodyVelocity and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local moveDirection = camera.CFrame.LookVector
+        local rightDirection = camera.CFrame.RightVector
+        local upDirection = camera.CFrame.UpVector
+        local moveInput = Vector3.new(0, 0, 0)
+
+        if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveInput = moveDirection end
+        if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveInput = -moveDirection end
+        if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveInput = -rightDirection end
+        if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveInput = rightDirection end
+        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveInput = moveInput + upDirection end
+        if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then moveInput = moveInput - upDirection end
+
+        bodyVelocity.Velocity = moveInput * flySpeed
+    end
+end
+
+-- Initialize
+RunService.Heartbeat:Connect(handleManualMovement)
+
+local function onCharacterAdded(character)
+    repeat task.wait() until character:FindFirstChild("HumanoidRootPart")
+    if flying then
+        startFlying()
+    end
+end
+
+player.CharacterAdded:Connect(onCharacterAdded)
+if player.Character then
+    onCharacterAdded(player.Character)
+end
