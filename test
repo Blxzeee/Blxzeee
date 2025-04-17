@@ -1,0 +1,114 @@
+local Library = loadstring(Game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
+
+local PhantomForcesWindow = Library:NewWindow("Gummy Bear Party!")
+
+local KillingCheats = PhantomForcesWindow:NewSection("Main")
+
+-- 🥚 Collect 61 (not 40 xDD) Eggs Button
+KillingCheats:CreateButton("Collect 40 Eggs", function()
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "Chocolate Island",
+        Text = "Collecting All Eggs...",
+        Duration = 5
+    })
+
+    local easterFolder = workspace:FindFirstChild("Easter")
+	if not easterFolder then
+    	warn("Easter folder not found")
+    	return
+	end
+
+	local collectiblesFolder = easterFolder:FindFirstChild("Easter_Eggs_Collectibles")
+	if not collectiblesFolder then
+		warn("Easter_Eggs_Collectibles folder not found")
+    	return
+	end
+
+	local player = game.Players.LocalPlayer
+	local char = player.Character or player.CharacterAdded:Wait()
+	local hrp = char:WaitForChild("HumanoidRootPart")
+
+	for _, part in ipairs(collectiblesFolder:GetDescendants()) do
+ 	   if part:IsA("BasePart") then
+	        hrp.CFrame = part.CFrame + Vector3.new(0, 3, 0)
+	        task.wait(0.25)
+	    end
+	end
+
+	game.StarterGui:SetCore("SendNotification", {
+        Title = "Chocolate Island",
+        Text = "Successfully Collected All Eggs!",
+        Duration = 5
+    })
+end)
+
+KillingCheats:CreateButton("Collect Nuki's", function()
+	local Players = game:GetService("Players")
+	local player = Players.LocalPlayer
+	local character = player.Character or player.CharacterAdded:Wait()
+	local hrp = character:WaitForChild("HumanoidRootPart")
+
+	local colorMapping = {
+		Red = Color3.fromRGB(255, 0, 0), -- Really red
+		Green = Color3.fromRGB(0, 255, 0), -- Lime green
+		Blue = Color3.fromRGB(0, 255, 255), -- Toothpaste
+		Yellow = Color3.fromRGB(255, 255, 0), -- New yeller
+	}
+
+	local function bringVisualToPlayer()
+		while true do
+			-- Wait until the Color leaderstats value is ready and valid
+			local targetColorName = player:WaitForChild("leaderstats"):WaitForChild("Color").Value
+			local targetColor = colorMapping[targetColorName]
+
+			-- Skip if no valid color found
+			if not targetColor then
+				warn("No valid color found for", targetColorName)
+				wait(1) -- Wait for a second before checking again
+				continue
+			end
+
+			-- Folder containing all Nuki models
+			local nukiFolder = workspace:WaitForChild("Nuki")
+
+			-- Loop through all Nuki models and bring matching 'Visual's to the player
+			for _, model in pairs(nukiFolder:GetDescendants()) do
+				if model:IsA("MeshPart") and model.Name == "Visual" then
+					if model.Color == targetColor then
+						-- Move the visual to the player's position
+						model.CFrame = hrp.CFrame + Vector3.new(0, 5, 0) -- Slightly above the player
+					end
+				end
+			end
+
+			-- Wait a short time before checking again
+			wait(0.05) -- Adjust this for how frequently the color should be checked (e.g., 1 second)
+		end
+	end
+
+	-- Start bringing the visuals to the player based on color
+	bringVisualToPlayer()
+
+end)
+
+-- 💬 Credits Section
+local Credits = PhantomForcesWindow:NewSection("Credits")
+
+Credits:CreateButton("Click To Copy Link:", function()
+    print(0)
+end)
+
+Credits:CreateButton("YouTube: @iBlxzeeeQu", function()
+    setclipboard("https://www.youtube.com/@iBlxzeeeQu")
+    notifyCopied("YouTube")
+end)
+
+Credits:CreateButton("Discord", function()
+    setclipboard("https://discord.gg/kXZjzmX6vx")
+    notifyCopied("Discord")
+end)
+
+Credits:CreateButton("Roblox", function()
+    setclipboard("https://www.roblox.com/users/3529993551/profile")
+    notifyCopied("Roblox")
+end)
