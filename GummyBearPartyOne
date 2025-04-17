@@ -1,1 +1,1 @@
-loadstring(game:HttpGet("https://github.com/Blxzeee/Blxzeee/blob/main/GummyBearParty"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Blxzeee/Blxzeee/refs/heads/main/GummyBearParty",true))()
