@@ -1,0 +1,44 @@
+local Library = loadstring(Game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
+
+local PhantomForcesWindow = Library:NewWindow("Walmart Discovered (game)")
+
+local KillingCheats = PhantomForcesWindow:NewSection("Main")
+
+KillingCheats:CreateButton("Get Badge", function()
+    local args = {
+	workspace:WaitForChild("ENVIRONMENT"):WaitForChild("PASSEO AREA"):WaitForChild("Trophy Cases"):WaitForChild("TROPHY SHELF")
+	}
+	game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ClaimTrophyCaseFunction"):InvokeServer(unpack(args))
+end)
+
+
+-- Function to send notification
+local function notifyCopied(platform)
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "Clipboard",
+        Text = "Copied " .. platform .. " link onto the clipboard",
+        Duration = 4
+    })
+end
+
+-- 💬 Credits Section
+local Credits = PhantomForcesWindow:NewSection("Credits @BlxzeScripts")
+
+Credits:CreateButton("Click To Copy Link:", function()
+    print(0)
+end)
+
+Credits:CreateButton("YouTube", function()
+    setclipboard("https://www.youtube.com/@BlxzeScript")
+    notifyCopied("YouTube")
+end)
+
+Credits:CreateButton("Discord", function()
+    setclipboard("https://discord.gg/kXZjzmX6vx")
+    notifyCopied("Discord")
+end)
+
+Credits:CreateButton("Roblox", function()
+    setclipboard("https://www.roblox.com/users/3529993551/profile")
+    notifyCopied("Roblox")
+end)
