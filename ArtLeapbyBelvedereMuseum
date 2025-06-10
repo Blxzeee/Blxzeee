@@ -1,0 +1,5 @@
+local args = {
+    [1] = 107733406983566;
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Communication", 9e9):WaitForChild("Functions", 9e9):GetChildren()[14]:InvokeServer(unpack(args))
