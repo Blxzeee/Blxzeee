@@ -1,0 +1,225 @@
+local Library = loadstring(Game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
+
+local PhantomForcesWindow = Library:NewWindow("Cheese Escape")
+
+local KillingCheats = PhantomForcesWindow:NewSection("Badge")
+
+KillingCheats:CreateButton("Instant Badge", function()
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+    -- Badge IDs to give
+    local badges = {
+        ["You completed the game"] = 2124910071,
+        ["Bloxy Cola"] = 2124910945,
+        ["Defeat The Rat"] = 2124940134,
+        ["unnamed"] = 2124940136,
+        ["Complete the second chapter"] = 2126421424,
+        ["Complete the third chapter"] = 4294830669625079,
+        ["Complete a random maze"] = 3199152428705017
+    }
+
+    -- Function to find the GiveBadge RemoteEvent
+    local function findGiveBadgeEvent()
+        for _, obj in pairs(ReplicatedStorage:GetDescendants()) do
+            if obj:IsA("RemoteEvent") and obj.Name == "GiveBadge" then
+                return obj
+            end
+        end
+        return nil
+    end
+
+    -- Attempt to give all badges
+    local giveBadgeEvent = findGiveBadgeEvent()
+    if not giveBadgeEvent then
+        warn("GiveBadge event not found!")
+        return
+    end
+
+    for name, badgeId in pairs(badges) do
+        giveBadgeEvent:FireServer(badgeId)
+        task.wait(0.15)
+    end
+
+    print("✅ All badges have been given.")
+end)
+
+local scriptEnabled = false
+local scriptThread = nil
+local idledConnection = nil
+
+
+local KillingCheats2 = PhantomForcesWindow:NewSection("AntiCheat Bypass")
+
+KillingCheats2:CreateToggle("Anti-Kick", function(value)
+    if value then
+        -- Enable Anti-Kick
+        scriptEnabled = true
+        local VirtualUser = game:GetService("VirtualUser")
+        local Players = game:GetService("Players")
+        local player = Players.LocalPlayer
+
+        scriptThread = task.spawn(function()
+            if not idledConnection then
+                idledConnection = player.Idled:Connect(function()
+                    VirtualUser:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+                    task.wait(1)
+                    VirtualUser:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+                end)
+            end
+
+            -- Optional: Keep-alive loop (not required but can be used for future additions)
+            while scriptEnabled do
+                task.wait(1)
+            end
+        end)
+
+        print("Anti-Kick enabled")
+    else
+        -- Disable Anti-Kick
+        scriptEnabled = false
+        if scriptThread then
+            task.cancel(scriptThread)
+            scriptThread = nil
+        end
+        if idledConnection then
+            idledConnection:Disconnect()
+            idledConnection = nil
+        end
+
+        print("Anti-Kick disabled")
+    end
+end)
+
+-- Credits Section
+local Credits = PhantomForcesWindow:NewSection("Credits @BlxzeScripts")
+
+Credits:CreateButton("Click To Copy Link:", function()
+    print("Click any link below to copy it to clipboard.")
+end)
+
+Credits:CreateButton("YouTube", function()
+    setclipboard("https://www.youtube.com/@BlxzeScripts")
+    notify("Clipboard", "Copied YouTube link onto the clipboard")
+end)
+
+Credits:CreateButton("Discord", function()
+    setclipboard("https://discord.gg/kXZjzmX6vx")
+    notify("Clipboard", "Copied Discord link onto the clipboard")
+end)
+
+Credits:CreateButton("Roblox", function()
+    setclipboard("https://www.roblox.com/users/3529993551/profile")
+    notify("Clipboard", "Copied Roblox link onto the clipboard")
+end)local Library = loadstring(Game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
+
+local PhantomForcesWindow = Library:NewWindow("Cheese Escape")
+
+local KillingCheats = PhantomForcesWindow:NewSection("Badge")
+
+KillingCheats:CreateButton("Instant Badge", function()
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+    -- Badge IDs to give
+    local badges = {
+        ["You completed the game"] = 2124910071,
+        ["Bloxy Cola"] = 2124910945,
+        ["Defeat The Rat"] = 2124940134,
+        ["unnamed"] = 2124940136,
+        ["Complete the second chapter"] = 2126421424,
+        ["Complete the third chapter"] = 4294830669625079,
+        ["Complete a random maze"] = 3199152428705017
+    }
+
+    -- Function to find the GiveBadge RemoteEvent
+    local function findGiveBadgeEvent()
+        for _, obj in pairs(ReplicatedStorage:GetDescendants()) do
+            if obj:IsA("RemoteEvent") and obj.Name == "GiveBadge" then
+                return obj
+            end
+        end
+        return nil
+    end
+
+    -- Attempt to give all badges
+    local giveBadgeEvent = findGiveBadgeEvent()
+    if not giveBadgeEvent then
+        warn("GiveBadge event not found!")
+        return
+    end
+
+    for name, badgeId in pairs(badges) do
+        giveBadgeEvent:FireServer(badgeId)
+        task.wait(0.15)
+    end
+
+    print("✅ All badges have been given.")
+end)
+
+local scriptEnabled = false
+local scriptThread = nil
+local idledConnection = nil
+
+
+local KillingCheats2 = PhantomForcesWindow:NewSection("AntiCheat Bypass")
+
+KillingCheats2:CreateToggle("Anti-Kick", function(value)
+    if value then
+        -- Enable Anti-Kick
+        scriptEnabled = true
+        local VirtualUser = game:GetService("VirtualUser")
+        local Players = game:GetService("Players")
+        local player = Players.LocalPlayer
+
+        scriptThread = task.spawn(function()
+            if not idledConnection then
+                idledConnection = player.Idled:Connect(function()
+                    VirtualUser:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+                    task.wait(1)
+                    VirtualUser:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+                end)
+            end
+
+            -- Optional: Keep-alive loop (not required but can be used for future additions)
+            while scriptEnabled do
+                task.wait(1)
+            end
+        end)
+
+        print("Anti-Kick enabled")
+    else
+        -- Disable Anti-Kick
+        scriptEnabled = false
+        if scriptThread then
+            task.cancel(scriptThread)
+            scriptThread = nil
+        end
+        if idledConnection then
+            idledConnection:Disconnect()
+            idledConnection = nil
+        end
+
+        print("Anti-Kick disabled")
+    end
+end)
+
+-- Credits Section
+local Credits = PhantomForcesWindow:NewSection("Credits @BlxzeScripts")
+
+Credits:CreateButton("Click To Copy Link:", function()
+    print("Click any link below to copy it to clipboard.")
+end)
+
+Credits:CreateButton("YouTube", function()
+    setclipboard("https://www.youtube.com/@BlxzeScripts")
+    notify("Clipboard", "Copied YouTube link onto the clipboard")
+end)
+
+Credits:CreateButton("Discord", function()
+    setclipboard("https://discord.gg/kXZjzmX6vx")
+    notify("Clipboard", "Copied Discord link onto the clipboard")
+end)
+
+Credits:CreateButton("Roblox", function()
+    setclipboard("https://www.roblox.com/users/3529993551/profile")
+    notify("Clipboard", "Copied Roblox link onto the clipboard")
+end)
