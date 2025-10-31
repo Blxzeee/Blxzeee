@@ -1,0 +1,118 @@
+-- Infinite back-and-forth LocalScript
+-- Place in StarterPlayerScripts
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local ContextActionService = game:GetService("ContextActionService")
+
+local player = Players.LocalPlayer
+
+-- Config
+local DISTANCE = 500            -- studs to each side from the start point (total travel = 100 studs)
+local TIME_PER_TRIP = 0.00012     -- seconds to travel one way (lower = faster)
+local AXIS = Vector3.new(0, 0, 1) -- axis of travel (Z axis). Change to Vector3.new(1,0,0) for X, etc.
+local TOGGLE_KEY = Enum.KeyCode.P -- press to toggle on/off
+
+-- Internal state
+local running = true
+local currentTween = nil
+local stopRequested = false
+
+local function createTween(part, targetCFrame, time)
+	local tweenInfo = TweenInfo.new(time, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 0, false)
+	return TweenService:Create(part, tweenInfo, {CFrame = targetCFrame})
+end
+
+local function startLoopForCharacter(character)
+	-- Ensure HumanoidRootPart exists
+	local hrp = character:WaitForChild("HumanoidRootPart", 5)
+	if not hrp then return end
+
+	-- base CFrame captured once at start
+	local baseCFrame = hrp.CFrame
+	local dirUnit = AXIS.Unit
+	local forwardGoal = baseCFrame * CFrame.new(dirUnit * DISTANCE)
+	local backwardGoal = baseCFrame * CFrame.new(dirUnit * -DISTANCE)
+
+	-- cleanup any previous tween
+	if currentTween then
+		pcall(function() currentTween:Cancel() end)
+		currentTween = nil
+	end
+
+	-- loop forever until stopRequested or character dies
+	running = true
+	stopRequested = false
+	while running and not stopRequested and character.Parent do
+		-- to forward
+		currentTween = createTween(hrp, forwardGoal, TIME_PER_TRIP)
+		currentTween:Play()
+		currentTween.Completed:Wait()
+		if stopRequested or not character.Parent then break end
+
+		-- to backward
+		currentTween = createTween(hrp, backwardGoal, TIME_PER_TRIP)
+		currentTween:Play()
+		currentTween.Completed:Wait()
+		-- loop continues
+	end
+
+	-- ensure we stop any remaining tween
+	if currentTween then
+		pcall(function() currentTween:Cancel() end)
+		currentTween = nil
+	end
+end
+
+local function stopLoop()
+	stopRequested = true
+	running = false
+	if currentTween then
+		pcall(function() currentTween:Cancel() end)
+		currentTween = nil
+	end
+end
+
+local function toggleAction(actionName, inputState, inputObject)
+	if inputState == Enum.UserInputState.Begin then
+		if running and not stopRequested then
+			stopLoop()
+		else
+			-- restart from current character if available
+			local char = player.Character
+			if char then
+				spawn(function()
+					-- small wait to ensure HRP exists if just respawned
+					task.wait(0.05)
+					startLoopForCharacter(char)
+				end)
+			end
+		end
+	end
+end
+
+-- Bind toggle key
+ContextActionService:BindAction("ToggleBackForth", toggleAction, false, TOGGLE_KEY)
+
+-- Start automatically when character spawns
+if player.Character then
+	spawn(function()
+		-- allow character to initialize
+		task.wait(0.05)
+		startLoopForCharacter(player.Character)
+	end)
+end
+
+player.CharacterAdded:Connect(function(char)
+	-- stop previous then start new loop for new character
+	stopLoop()
+	task.wait(0.005)
+	startLoopForCharacter(char)
+end)
+
+-- Stop when player leaves (cleanup)
+player.AncestryChanged:Connect(function()
+	if not player:IsDescendantOf(game) then
+		stopLoop()
+	end
+end)
