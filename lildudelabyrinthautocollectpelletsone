@@ -1,1 +1,1 @@
-https://raw.githubusercontent.com/Blxzeee/Blxzeee/refs/heads/main/lildudelabyrinthautocollectpellets
+loadstring(game:HttpGet('https://raw.githubusercontent.com/Blxzeee/Blxzeee/refs/heads/main/lildudelabyrinthautocollectpellets', true))()
