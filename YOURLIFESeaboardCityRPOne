@@ -1,0 +1,3 @@
+-- Script by @BlxzeScripts
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Blxzeee/Blxzeee/refs/heads/main/YOURLIFESeaboardCityRP"))()
